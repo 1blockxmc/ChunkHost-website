@@ -39,23 +39,6 @@ a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 ul { list-style: none; }
 
-.banner {
-  background-color: #007bff; /* Blue background */
-  color: white;
-  text-align: center;
-  padding: 1rem 0;
-  font-size: 1.5rem;
-  position: fixed; /* Fix banner to the top */
-  top: 0;
-  width: 100%; /* Full width */
-  z-index: 10; /* Ensure it's on top of other content */
-
-  /* Glowing Effect (optional) */
-  background: linear-gradient(to right, rgba(0,123,255,0.8), 
-rgba(0,123,255,0)); 
-  backdrop-filter: blur(10px); /* Subtle blurring for the glow */
-}
-
 /* ── Layout ────────────────────────────────────────────────────── */
 .container {
   max-width: 1140px;

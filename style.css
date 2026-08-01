@@ -83,6 +83,7 @@ ul { list-style: none; }
 .bg-photo--3 { background-image: url("wallpaper_minecraft_caves_cliffs(part1)_2560x1440.png"); }
 .bg-photo--4 { background-image: url("wallpaper_minecraft_island_2560x1440.png"); }
 .bg-photo--5 { background-image: url("wallpaper_minecraft_trickytrials_2560x1440.png"); }
+.bg-photo--6 { background-image: url("MCV_SummerDropKeyArt_NetDownloadableWallpaper_2560x1440.png"); }
 .bg-photo::after {
   content: '';
   position: absolute;

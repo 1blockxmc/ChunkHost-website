@@ -79,9 +79,9 @@ ul { list-style: none; }
   pointer-events: none;
 }
 .bg-photo--1 { background-image: url("MCV_SPR26Drop_TT_DotNet_Wallpaper_2560x1440.png"); }
-.bg-photo--2 { background-image: url("wallpaper2.png"); }
-.bg-photo--3 { background-image: url("wallpaper3.png"); }
-.bg-photo--4 { background-image: url("wallpaper4.png"); }
+.bg-photo--2 { background-image: url("Minecraft_Fall_Drop_Campaign_Key_Art_DotNet_Downloadable_Wallpaper_2560x1440.png"); }
+.bg-photo--3 { background-image: url("wallpaper_minecraft_caves_cliffs(part1)_2560x1440.png"); }
+.bg-photo--4 { background-image: url("wallpaper_minecraft_island_2560x1440.png"); }
 .bg-photo--5 { background-image: url("wallpaper5.png"); }
 .bg-photo::after {
   content: '';

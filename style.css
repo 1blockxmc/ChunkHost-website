@@ -63,7 +63,7 @@ ul { list-style: none; }
   transform: scale(1.05);
   pointer-events: none;
 }
-.bg-photo--1 { background-image: url("wallpaper1.png"); }
+.bg-photo--1 { background-image: url("MCV_SPR26Drop_TT_DotNet_Wallpaper_2560x1440.png"); }
 .bg-photo--2 { background-image: url("wallpaper2.png"); }
 .bg-photo--3 { background-image: url("wallpaper3.png"); }
 .bg-photo--4 { background-image: url("wallpaper4.png"); }

@@ -7,10 +7,24 @@
   const btnStop    = document.getElementById('btnStop');
   const btnRestart = document.getElementById('btnRestart');
 
+  const cpuVal  = document.getElementById('metricCpuVal');
+  const cpuBar  = document.getElementById('metricCpuBar');
+  const ramVal  = document.getElementById('metricRamVal');
+  const ramBar  = document.getElementById('metricRamBar');
+  const diskVal = document.getElementById('metricDiskVal');
+  const diskBar = document.getElementById('metricDiskBar');
+  const netVal  = document.getElementById('metricNetVal');
+  const netBar  = document.getElementById('metricNetBar');
+
   if (!body || !btnStart) return;
+
+  const RAM_TOTAL  = 8;    // GB
+  const DISK_TOTAL = 80;   // GB
+  const DISK_USED_IDLE = 12; // GB (world + jar, always on disk)
 
   let state = 'offline'; // offline | starting | online | stopping
   let timers = [];
+  let metricsTimer = null;
   let clock = new Date();
   clock.setHours(12, 0, 0, 0);
 
@@ -54,6 +68,69 @@
     btnRestart.disabled = mode !== 'online';
   }
 
+  function setMetricBars(idle) {
+    [cpuBar, ramBar, diskBar, netBar].forEach(bar => {
+      if (!bar) return;
+      bar.classList.toggle('is-idle', idle);
+    });
+  }
+
+  function renderIdleMetrics() {
+    clearInterval(metricsTimer);
+    metricsTimer = null;
+    if (cpuVal)  cpuVal.textContent  = '0%';
+    if (cpuBar)  cpuBar.style.width  = '0%';
+    if (ramVal)  ramVal.textContent  = `0 / ${RAM_TOTAL} GB`;
+    if (ramBar)  ramBar.style.width  = '0%';
+    if (diskVal) diskVal.textContent = `${DISK_USED_IDLE} / ${DISK_TOTAL} GB`;
+    if (diskBar) diskBar.style.width = `${(DISK_USED_IDLE / DISK_TOTAL) * 100}%`;
+    if (netVal)  netVal.textContent  = '↓ 0 KB/s ↑ 0 KB/s';
+    if (netBar)  netBar.style.width  = '0%';
+    setMetricBars(true);
+  }
+
+  function renderBootingMetrics() {
+    setMetricBars(false);
+    if (cpuVal)  cpuVal.textContent  = '87%';
+    if (cpuBar)  cpuBar.style.width  = '87%';
+    if (ramVal)  ramVal.textContent  = `${(RAM_TOTAL * 0.55).toFixed(1)} / ${RAM_TOTAL} GB`;
+    if (ramBar)  ramBar.style.width  = '55%';
+    if (diskVal) diskVal.textContent = `${DISK_USED_IDLE} / ${DISK_TOTAL} GB`;
+    if (diskBar) diskBar.style.width = `${(DISK_USED_IDLE / DISK_TOTAL) * 100}%`;
+    if (netVal)  netVal.textContent  = '↓ 340 KB/s ↑ 40 KB/s';
+    if (netBar)  netBar.style.width  = '60%';
+  }
+
+  function startLiveMetrics() {
+    setMetricBars(false);
+    clearInterval(metricsTimer);
+    const tick = () => {
+      const cpu   = 18 + Math.random() * 22;                 // 18–40%
+      const ramGB = RAM_TOTAL * (0.28 + Math.random() * 0.1); // ~28–38% used
+      const diskGB = DISK_USED_IDLE + Math.random() * 3;
+      const down  = 20 + Math.random() * 140;                // KB/s
+      const up    = 4 + Math.random() * 30;
+
+      if (cpuVal)  cpuVal.textContent  = `${cpu.toFixed(0)}%`;
+      if (cpuBar)  cpuBar.style.width  = `${cpu}%`;
+      if (ramVal)  ramVal.textContent  = `${ramGB.toFixed(1)} / ${RAM_TOTAL} GB`;
+      if (ramBar)  ramBar.style.width  = `${(ramGB / RAM_TOTAL) * 100}%`;
+      if (diskVal) diskVal.textContent = `${diskGB.toFixed(1)} / ${DISK_TOTAL} GB`;
+      if (diskBar) diskBar.style.width = `${(diskGB / DISK_TOTAL) * 100}%`;
+      if (netVal)  netVal.textContent  = `↓ ${down.toFixed(0)} KB/s ↑ ${up.toFixed(0)} KB/s`;
+      if (netBar)  netBar.style.width  = `${Math.min(down / 2, 100)}%`;
+    };
+    tick();
+    metricsTimer = setInterval(tick, 1600);
+  }
+
+  function stopLiveMetrics() {
+    clearInterval(metricsTimer);
+    metricsTimer = null;
+  }
+
+  renderIdleMetrics();
+
   function run(sequence, onDone) {
     clearTimers();
     let cumulative = 0;
@@ -70,6 +147,7 @@
     state = 'starting';
     setStatus('starting');
     setButtons('starting');
+    renderBootingMetrics();
     run([
       { delay: 100,  text: '$ ./start.sh',                                                          cls: 'terminal-cmd' },
       { delay: 350,  text: `[${ts()}] [Server thread/INFO]: Starting minecraft server version 1.21.4`, cls: 'terminal-info' },
@@ -85,6 +163,7 @@
       state = 'online';
       setStatus('online');
       setButtons('online');
+      startLiveMetrics();
     });
   }
 
@@ -92,6 +171,7 @@
     state = 'stopping';
     setStatus('stopping');
     setButtons('stopping');
+    stopLiveMetrics();
     run([
       { delay: 100, text: '$ ./stop.sh',                                                       cls: 'terminal-cmd'  },
       { delay: 300, text: `[${ts()}] [Server thread/INFO]: Stopping the server`,                cls: 'terminal-warn' },
@@ -105,6 +185,7 @@
       state = 'offline';
       setStatus('offline');
       setButtons('offline');
+      renderIdleMetrics();
       addLine('// server offline — press start to boot up', 'terminal-muted');
       if (thenStart) startSequence();
     });
@@ -125,6 +206,22 @@
     addLine('$ ./restart.sh', 'terminal-cmd');
     stopSequence(true);
   });
+
+  // ── Auto-start when the demo scrolls into view ────────────────
+  const terminalSection = document.getElementById('live-demo');
+  if (terminalSection && 'IntersectionObserver' in window) {
+    let hasAutoStarted = false;
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !hasAutoStarted && state === 'offline') {
+          hasAutoStarted = true;
+          startSequence();
+          scrollObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    scrollObserver.observe(terminalSection);
+  }
 })();
 
 // ── Promo Bar Dismiss ────────────────────────────────────────

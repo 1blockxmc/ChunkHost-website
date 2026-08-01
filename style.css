@@ -57,18 +57,22 @@ ul { list-style: none; }
   position: absolute;
   inset: -20px;
   z-index: 0;
-  background-image: var(--bg-image);
   background-size: cover;
   background-position: center;
-  filter: blur(7px) brightness(0.32) saturate(115%);
+  filter: blur(6px) brightness(0.5) saturate(120%);
   transform: scale(1.05);
   pointer-events: none;
 }
+.bg-photo--1 { background-image: url("wallpaper1.png"); }
+.bg-photo--2 { background-image: url("wallpaper2.png"); }
+.bg-photo--3 { background-image: url("wallpaper3.png"); }
+.bg-photo--4 { background-image: url("wallpaper4.png"); }
+.bg-photo--5 { background-image: url("wallpaper5.png"); }
 .bg-photo::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.45) 25%, rgba(10,10,10,0.45) 75%, rgba(10,10,10,0.9) 100%);
+  background: linear-gradient(to bottom, rgba(10,10,10,0.8) 0%, rgba(10,10,10,0.35) 25%, rgba(10,10,10,0.35) 75%, rgba(10,10,10,0.85) 100%);
 }
 .section--dark > .bg-photo::after,
 .section--gray > .bg-photo::after {

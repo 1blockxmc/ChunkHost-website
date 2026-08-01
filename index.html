@@ -110,6 +110,40 @@
           <div class="terminal-body" id="terminalBody">
             <div class="terminal-line terminal-muted">// server offline — press start to boot up</div>
           </div>
+          <div class="terminal-metrics" id="terminalMetrics">
+            <div class="metric">
+              <div class="metric-head">
+                <span class="metric-ic">⚙️</span>
+                <span class="metric-label">CPU</span>
+                <span class="metric-value" id="metricCpuVal">0%</span>
+              </div>
+              <div class="metric-bar"><div class="metric-bar-fill" id="metricCpuBar"></div></div>
+            </div>
+            <div class="metric">
+              <div class="metric-head">
+                <span class="metric-ic">🧠</span>
+                <span class="metric-label">RAM</span>
+                <span class="metric-value" id="metricRamVal">0 / 8 GB</span>
+              </div>
+              <div class="metric-bar"><div class="metric-bar-fill" id="metricRamBar"></div></div>
+            </div>
+            <div class="metric">
+              <div class="metric-head">
+                <span class="metric-ic">💾</span>
+                <span class="metric-label">Storage</span>
+                <span class="metric-value" id="metricDiskVal">12 / 80 GB</span>
+              </div>
+              <div class="metric-bar"><div class="metric-bar-fill" id="metricDiskBar"></div></div>
+            </div>
+            <div class="metric">
+              <div class="metric-head">
+                <span class="metric-ic">🌐</span>
+                <span class="metric-label">Network</span>
+                <span class="metric-value" id="metricNetVal">↓ 0 KB/s ↑ 0 KB/s</span>
+              </div>
+              <div class="metric-bar"><div class="metric-bar-fill" id="metricNetBar"></div></div>
+            </div>
+          </div>
         </div>
 
         <div class="terminal-controls">

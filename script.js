@@ -233,6 +233,81 @@ if (promoBar && promoClose) {
   });
 }
 
+// ── Promo Code Copy ───────────────────────────────────────────
+const promoCode = document.getElementById('promoCode');
+if (promoCode) {
+  promoCode.addEventListener('click', async () => {
+    const text = promoCode.textContent.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      // clipboard API unavailable — fail silently, still show feedback
+    }
+    promoCode.classList.add('copied');
+    setTimeout(() => promoCode.classList.remove('copied'), 1500);
+  });
+}
+
+// ── Stats Band Count-Up ───────────────────────────────────────
+const statNums = document.querySelectorAll('.stats-band-num');
+if (statNums.length && 'IntersectionObserver' in window) {
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.countTo);
+      const decimals = parseInt(el.dataset.decimals || '0', 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1400;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const value = target * eased;
+        el.textContent = value.toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      statObserver.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  statNums.forEach(el => statObserver.observe(el));
+}
+
+// ── RAM → Price Calculator ─────────────────────────────────────
+(() => {
+  const slider     = document.getElementById('calcSlider');
+  const ramVal     = document.getElementById('calcRamVal');
+  const priceVal   = document.getElementById('calcPriceVal');
+  const playersEl  = document.getElementById('calcPlayers');
+  const ctaEl      = document.getElementById('calcCta');
+  if (!slider) return;
+
+  const RATE = 1.5; // $ per GB
+
+  function playerEstimate(gb) {
+    if (gb <= 2)  return '5–8 players';
+    if (gb <= 4)  return '10–15 players';
+    if (gb <= 6)  return '15–25 players';
+    if (gb <= 8)  return '25–40 players';
+    if (gb <= 10) return '40–60 players';
+    if (gb <= 13) return '55–75 players';
+    return '60–80+ players';
+  }
+
+  function update() {
+    const gb = parseInt(slider.value, 10);
+    const price = (gb * RATE).toFixed(gb * RATE % 1 === 0 ? 0 : 2);
+    ramVal.textContent = gb;
+    priceVal.textContent = price;
+    playersEl.textContent = `Good for ~${playerEstimate(gb)}`;
+    ctaEl.textContent = `Get ${gb} GB for $${price}/mo`;
+  }
+
+  slider.addEventListener('input', update);
+  update();
+})();
+
 // ── Mobile Nav Toggle ─────────────────────────────────────────
 const mobileToggle = document.getElementById('mobileToggle');
 const mobileMenu   = document.getElementById('mobileMenu');
@@ -256,7 +331,8 @@ mobileMenu.querySelectorAll('a').forEach(link => {
 const fadeTargets = [
   '.hero-badge', '.hero-title', '.hero-sub', '.hero-cta-row', '.hero-stats',
   '.feature-card', '.step', '.plan-card', '.spec-item', '.faq-item',
-  '.section-label', '.section-title', '.section-sub', '.cta-title', '.cta-sub'
+  '.section-label', '.section-title', '.section-sub', '.cta-title', '.cta-sub',
+  '.stats-band-item', '.review-card', '.calc-card'
 ];
 
 fadeTargets.forEach(selector => {
